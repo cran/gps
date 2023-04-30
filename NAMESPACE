@@ -1,12 +1,15 @@
 useDynLib(gps, .registration = TRUE)
 
-export(MakeGrid, PlaceKnots, DemoKnots, DemoBS,
-       SparseD, NullD, DemoNull, DiffCoef, SparseS, btSb,
-       pbsDesign, SparsePD, DemoPBS)
+export(MakeGrid, PlaceKnots, DemoKnots, DemoBS, DemoSpl,
+       SparseD, DemoNull, DiffCoef,
+       GramBS, btSb,
+       PriorCoef, MPinv,
+       pbsDesign, SparsePD, DemoPBS,
+       gps2GS, DemoRhoLim)
 
 import(stats)
 importFrom(splines, splineDesign)
-importFrom(Matrix, crossprod, bandSparse)
+importFrom(Matrix, crossprod)
 importFrom(methods, new)
 importFrom(graphics, plot.default, points.default, lines.default,
            abline, matplot, matlines, par, segments, text.default, mtext, polygon, title)

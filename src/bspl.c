@@ -2,6 +2,23 @@
 #include <Rinternals.h>
 #include <R_ext/Lapack.h>
 #include "base.h"
+int IsMonoInc (int n, double *x) {
+  int flag = 1; double *xi, *xn = x + n - 1;
+  for (xi = x; xi < xn; xi++) {
+    if (xi[1] <= xi[0]) {flag = 0; break;}
+  }
+  return flag;
+}
+SEXP C_IsMonoInc (SEXP x, SEXP n, SEXP xi) {
+  if (!isReal(x)) error("'x' is not in double-precision mode!");
+  int i = asInteger(xi), l = length(x);
+  if (i < 1 || i > l) error("'xi' is out of bound!");
+  double *subx = REAL(x) + i - 1;
+  int N = asInteger(n);
+  if (N > l - i + 1) error("n <= length(x) - xi + 1 required!");
+  int flag = IsMonoInc(N, subx);
+  return ScalarInteger(flag);
+}
 void MakeGrid (double *b, int k, int n, double *x, int rmdup) {
   int ni = k - 1;
   double *ptrb = b, *bend = b + ni, b0, b1;
@@ -24,9 +41,9 @@ void MakeGrid (double *b, int k, int n, double *x, int rmdup) {
   }
 }
 SEXP C_MakeGrid (SEXP b, SEXP n, SEXP rmdup) {
-  int k = length(b), c_n = asInteger(n), c_rmdup = asInteger(rmdup);
-  SEXP x = PROTECT(allocVector(REALSXP, (k - 1) * (c_n - c_rmdup) + c_rmdup));
-  MakeGrid(REAL(b), k, c_n, REAL(x), c_rmdup);
+  int K = length(b), N = asInteger(n), RMDUP = asInteger(rmdup);
+  SEXP x = PROTECT(allocVector(REALSXP, (K - 1) * (N - RMDUP) + RMDUP));
+  MakeGrid(REAL(b), K, N, REAL(x), RMDUP);
   UNPROTECT(1);
   return x;
 }
@@ -78,7 +95,7 @@ SEXP C_SbarBlocks (SEXP xd, SEXP W, SEXP B) {
   double *s = REAL(xd);
   double *b = s + k1;
   double *L = REAL(W); int blocksize;
-  F77_CALL(dpotf2)("l", &ord, L, &ord, &blocksize);
+  F77_CALL(dpotf2)("l", &ord, L, &ord, &blocksize FCONE);
   double *Bj = REAL(B);
   blocksize = ord * ord;
   double alpha;
@@ -104,7 +121,7 @@ static inline void Block2LTB (int n, double *A, double *L) {
     Ajj += n + 1; L0j += n;
   }
 }
-SEXP C_SbarLTB (SEXP S, SEXP LPBTRF) {
+SEXP C_SbarLTB (SEXP S) {
   SEXP Dim = getAttrib(S, R_DimSymbol);
   int *dim = INTEGER(Dim);
   int ord = dim[0];
@@ -118,10 +135,6 @@ SEXP C_SbarLTB (SEXP S, SEXP LPBTRF) {
   while (Sj < Send) {
     Block2LTB(ord, Sj, Lj);
     Sj += blocksize; Lj += ord;
-  }
-  if (asInteger(LPBTRF)) {
-    k1 = ord - 1;
-    F77_CALL(dpbtrf)("l", &n, &k1, L, &ord, &blocksize);
   }
   UNPROTECT(1);
   return LTB;
