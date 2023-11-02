@@ -94,7 +94,7 @@ void SolveA (int p, int q, double *E, double *F, double *G, double *v, double *u
   }
 }
 int MinDR (int p, int q, double *E, double *w, double tol) {
-  int m = p - q, k, i; double norm, w0 = 0.0, w1 = 0.0;
+  int m = p - q, k; double norm, w0 = 0.0, w1 = 0.0;
   int sizeF = q * m, sizeG = m * m, sizeu = q;
   if (m > 1) sizeu += q + m;
   double *work = malloc((sizeF + sizeG + q + sizeu) * sizeof(double));

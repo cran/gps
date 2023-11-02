@@ -4,7 +4,7 @@
 \alias{DemoRhoLim}
 
 \title{
-Penalized B-splines estimation with automatic grid search of smoothing parameter
+Penalized B-splines estimation with automatic grid search of their smoothing parameter
 }
 
 \description{
@@ -53,7 +53,7 @@ Zheyuan Li \email{zheyuan.li@bath.edu}
 }
 
 \references{
-Zheyuan Li and Jiguo Cao (2023). Automatic search intervals for the smoothing parameter in penalized splines, \emph{Statistics and Computing}, \doi{10.1007/s11222-022-10178-z}.
+Zheyuan Li and Jiguo Cao (2023). Automatic search intervals for the smoothing parameter in penalized splines, \emph{Statistics and Computing}, \doi{10.1007/s11222-022-10178-z}
 }
 
 \examples{
